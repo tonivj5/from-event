@@ -1,27 +1,19 @@
-<p align="center">
- <img width="20%" height="20%" src="./logo.svg">
-</p>
-
-<br />
-
 [![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg?style=flat-square)]()
 [![commitizen](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)]()
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)]()
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![All Contributors](https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 [![ngneat](https://img.shields.io/badge/@-ngneat-383636?style=flat-square&labelColor=8f68d4)](https://github.com/ngneat/)
 
-Only for Ivy
+> Make ViewChild and ContentChild Reactive
 
-> The Library Slogan
+This library works only with Ivy.
 
 ## Installation
-
-### NPM
-
 `npm install @ngneat/from-event`
 
 ## Usage
+Use the `FromEvent` decorator with `ViewChild` or `ContentChild`. Note that it expects to get `ElementRef`.
 
 ```ts
 import { FromEvent } from '@ngneat/from-event';
@@ -34,7 +26,7 @@ import { FromEvent } from '@ngneat/from-event';
     </button>
   `
 })
-class ButtonComponent implements AfterViewInit, OnDestroy {
+class ButtonComponent implements AfterViewInit {
   @FromEvent('click')
   @ViewChild('button') click$: Observable<MouseEvent>;
 
@@ -44,6 +36,7 @@ class ButtonComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
+Use the `FromEvent` decorator with `ViewChildren` or `ContentChildren`. Note that it expects to get `ElementRef`.
 
 ```ts
 import { FromEvents } from '@ngneat/from-event';
@@ -65,7 +58,7 @@ class HostComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
-Don't forget to unsubscribe.
+Have fun, and don't forget to unsubscribe.
 
 ## Contributors ✨
 
