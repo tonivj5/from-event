@@ -5,7 +5,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 [![ngneat](https://img.shields.io/badge/@-ngneat-383636?style=flat-square&labelColor=8f68d4)](https://github.com/ngneat/)
 
-> Make ViewChild and ContentChild Reactive
+> ViewChild and FromEvent — a Match Made in Angular Heaven
 
 ## Installation
 `npm install @ngneat/from-event`
