@@ -60,7 +60,7 @@ class MyComponent implements AfterViewInit {
 ```
 
 
-Use the `FromEvent` decorator with `ViewChildren` or `ContentChildren`. Note that it expects to get `ElementRef`.
+Use the `FromEvents` decorator with `ViewChildren` or `ContentChildren`. Note that it expects to get `ElementRef`.
 
 ```ts
 import { FromEvents } from '@ngneat/from-event';
