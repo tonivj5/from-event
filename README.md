@@ -41,7 +41,7 @@ A common example is using it with `switchMap()`:
 import { FromEvent } from '@ngneat/from-event';
 
 @Component({
-  selector: 'my-btn',
+  selector: 'my-comp',
   template: `
     <button #trigger>Trigger</button>
   `
