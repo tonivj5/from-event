@@ -7,6 +7,8 @@
 
 > ViewChild and FromEvent — a Match Made in Angular Heaven
 
+Turn `ViewChild` and `ContentChild` queries into an RxJS stream.
+
 ## Installation
 `npm install @ngneat/from-event`
 
