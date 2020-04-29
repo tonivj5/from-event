@@ -28,7 +28,8 @@ import { FromEvent } from '@ngneat/from-event';
 })
 class ButtonComponent implements AfterViewInit {
   @FromEvent('click')
-  @ViewChild('button') click$: Observable<MouseEvent>;
+  @ViewChild('button') 
+  click$: Observable<MouseEvent>;
 
   ngAfterViewInit() {
     this.click$.subscribe(console.log);
@@ -50,7 +51,8 @@ import { FromEvents } from '@ngneat/from-event';
 })
 class HostComponent implements AfterViewInit, OnDestroy {
   @FromEvents('click')
-  @ViewChildren(ButtonComponent, { read: ElementRef }) clicks$: Observable<MouseEvent>;
+  @ViewChildren(ButtonComponent, { read: ElementRef }) 
+  clicks$: Observable<MouseEvent>;
 
   ngAfterViewInit() {
     this.clicks$.subscribe(console.log);
@@ -58,7 +60,7 @@ class HostComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
-Have fun, and don't forget to unsubscribe.
+Have fun, and don't forget to unsubscribe. You can do it with [until-destroy](https://github.com/ngneat/until-destroy).
 
 ## Contributors ✨
 

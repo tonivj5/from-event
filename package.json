@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:lib": "ng build @ngneat/from-event",
+    "build:lib": "ng build @ngneat/from-event --prod",
     "test": "ng test @ngneat/from-event",
     "contributors:add": "all-contributors add",
     "hooks:pre-commit": "node hooks/pre-commit.js",
