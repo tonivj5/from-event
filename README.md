@@ -7,8 +7,6 @@
 
 > Make ViewChild and ContentChild Reactive
 
-This library works only with Ivy.
-
 ## Installation
 `npm install @ngneat/from-event`
 

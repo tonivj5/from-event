@@ -2,11 +2,6 @@
   "name": "@ngneat/from-event",
   "version": "1.0.0",
   "description": "A declarative way to register events in Angular",
-  "peerDependencies": {
-    "@angular/common": "^9.1.3",
-    "@angular/core": "^9.1.3",
-    "tslib": "^1.10.0"
-  },
   "publishConfig": {
     "access": "public"
   },
