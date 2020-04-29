@@ -43,18 +43,18 @@ import { FromEvent } from '@ngneat/from-event';
 @Component({
   selector: 'my-btn',
   template: `
-    <button #button>
-      <ng-content></ng-content>
-    </button>
+    <button #trigger>Trigger</button>
   `
 })
-class ButtonComponent implements AfterViewInit {
+class MyComponent implements AfterViewInit {
   @FromEvent('click')
-  @ViewChild('button') 
-  click$: Observable<MouseEvent>;
+  @ViewChild('trigger') 
+  trigger$: Observable<MouseEvent>;
 
   ngAfterViewInit() {
-    this.click$.pipe(switchMap(() => service.doSomething())).subscribe();
+    this.trigger$.pipe(switchMap(() => service.doSomething())).subscribe(result => {
+      // Do something with the result
+    });
   }
 }
 ```
