@@ -35,6 +35,31 @@ class ButtonComponent implements AfterViewInit {
 }
 ```
 
+A common example is using it with `switchMap()`:
+
+```ts
+import { FromEvent } from '@ngneat/from-event';
+
+@Component({
+  selector: 'my-btn',
+  template: `
+    <button #button>
+      <ng-content></ng-content>
+    </button>
+  `
+})
+class ButtonComponent implements AfterViewInit {
+  @FromEvent('click')
+  @ViewChild('button') 
+  click$: Observable<MouseEvent>;
+
+  ngAfterViewInit() {
+    this.click$.pipe(switchMap(() => service.doSomething())).subscribe();
+  }
+}
+```
+
+
 Use the `FromEvent` decorator with `ViewChildren` or `ContentChildren`. Note that it expects to get `ElementRef`.
 
 ```ts
@@ -53,7 +78,7 @@ class HostComponent implements AfterViewInit, OnDestroy {
   clicks$: Observable<MouseEvent>;
 
   ngAfterViewInit() {
-    this.clicks$.subscribe(console.log);
+    this.clicks$.subscribe(e => console.log(e.target));
   }
 }
 ```
