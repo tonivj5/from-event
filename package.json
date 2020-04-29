@@ -65,8 +65,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -e $GIT_PARAMS",
-      "pre-commit": "npm run hooks:pre-commit && lint-staged",
-      "pre-push": "npm run test:headless"
+      "pre-commit": "npm run hooks:pre-commit && lint-staged"
     }
   },
   "config": {
