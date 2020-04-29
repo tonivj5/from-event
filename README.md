@@ -58,7 +58,7 @@ class HostComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
-Have fun, and don't forget to unsubscribe. You can do it with [until-destroy](https://github.com/ngneat/until-destroy).
+Have fun, and don't forget to unsubscribe. If you work with **Ivy**, you can do it with [until-destroy](https://github.com/ngneat/until-destroy).
 
 ## Contributors ✨
 
