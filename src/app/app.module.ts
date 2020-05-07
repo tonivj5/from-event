@@ -7,9 +7,10 @@ import { TestComponent } from './test/test.component';
 import { CheckDirective } from './check.directive';
 import { ButtonComponent } from './button/button.component';
 import { ViewChildrenComponent } from './view-children/view-children.component';
+import { CounterComponent } from './counter/counter.component';
 
 @NgModule({
-  declarations: [AppComponent, TestComponent, CheckDirective, ButtonComponent, ViewChildrenComponent],
+  declarations: [AppComponent, TestComponent, CheckDirective, ButtonComponent, ViewChildrenComponent, CounterComponent],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent],

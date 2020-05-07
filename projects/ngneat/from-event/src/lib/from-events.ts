@@ -1,14 +1,17 @@
 import { ElementRef, QueryList } from '@angular/core';
-import { fromEvent, merge } from 'rxjs';
-import { startWith, switchMap } from 'rxjs/operators';
+import { fromEvent, merge, defer } from 'rxjs';
+import { startWith, switchMap, takeUntil } from 'rxjs/operators';
+
+import { initIfNeeded } from './init-if-needed';
 
 export function FromEvents<K extends keyof DocumentEventMap>(event: K, eventOptions?: AddEventListenerOptions) {
   return function (target: any, propertyKey: string) {
-    const event$ = Symbol();
+    const eventToken = Symbol(propertyKey);
+    const destroyToken = Symbol(propertyKey);
 
     Object.defineProperty(target, propertyKey, {
       set(list: QueryList<ElementRef>) {
-        this[event$] = list.changes.pipe(
+        const events$ = list.changes.pipe(
           startWith(list.toArray()),
           switchMap((elements: Array<ElementRef>) => {
             const elements$ = elements.map(({ nativeElement }) => {
@@ -18,9 +21,17 @@ export function FromEvents<K extends keyof DocumentEventMap>(event: K, eventOpti
             return merge(...elements$);
           })
         );
+
+        if (this[eventToken]) {
+          events$.pipe(takeUntil(this[destroyToken])).subscribe(this[eventToken]);
+        }
+
+        this[eventToken] = events$;
       },
       get() {
-        return this[event$];
+        initIfNeeded(this, eventToken, destroyToken);
+
+        return defer(() => this[eventToken]);
       },
     });
   };
