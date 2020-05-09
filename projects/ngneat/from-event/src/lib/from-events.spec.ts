@@ -5,6 +5,7 @@ import { FromEvents } from '@ngneat/from-event';
 import { takeUntil } from 'rxjs/operators';
 
 let clicked = [];
+let clickedFromConstructorSubscription = [];
 
 @Component({
   selector: 'my-btn',
@@ -29,6 +30,13 @@ class HostComponent implements AfterViewInit, OnDestroy {
   @FromEvents('click')
   @ViewChildren(ButtonComponent, { read: ElementRef })
   clicks$: Observable<MouseEvent>;
+
+  constructor() {
+    this.clicks$.pipe(takeUntil(this.subject)).subscribe((event) => {
+      const id = (event.target as HTMLButtonElement).parentElement.getAttribute('id');
+      clickedFromConstructorSubscription.push(id);
+    });
+  }
 
   ngAfterViewInit() {
     this.clicks$.pipe(takeUntil(this.subject)).subscribe((event) => {
@@ -57,5 +65,6 @@ describe('FromEvents', () => {
     });
 
     expect(clicked).toEqual(['1', '2', '3']);
+    expect(clickedFromConstructorSubscription).toEqual(['1', '2', '3']);
   });
 });
