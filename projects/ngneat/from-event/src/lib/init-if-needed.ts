@@ -1,20 +1,17 @@
 import { Subject } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { finalize, refCount, publish } from 'rxjs/operators';
 
-export function initIfNeeded(that: object, eventToken: symbol, destroyToken: symbol) {
+export function initIfNeeded(that: object, eventToken: symbol) {
   if (!that[eventToken]) {
-    that[destroyToken] = new Subject();
     let event$ = new Subject();
 
     that[eventToken] = event$.pipe(
       finalize(() => {
-        that[destroyToken].next();
-        that[destroyToken].complete();
-        that[destroyToken] = null;
-
         event$.complete();
         event$ = null;
-      })
+      }),
+      publish(),
+      refCount()
     );
   }
 }
