@@ -1,16 +1,28 @@
 import { ElementRef } from '@angular/core';
-import { fromEvent } from 'rxjs';
+import { fromEvent, defer } from 'rxjs';
+
+import { initIfNeeded } from './init-if-needed';
+import { takeUntil } from 'rxjs/operators';
 
 export function FromEvent<K extends keyof DocumentEventMap>(event: K, eventOptions?: AddEventListenerOptions) {
   return function (target: any, propertyKey: string) {
-    const event$ = Symbol();
+    const eventToken = Symbol(propertyKey);
+    const destroyToken = Symbol(propertyKey);
 
     Object.defineProperty(target, propertyKey, {
       set(elementRef: ElementRef) {
-        this[event$] = fromEvent(elementRef.nativeElement, event, eventOptions);
+        const event$ = fromEvent(elementRef.nativeElement, event, eventOptions);
+
+        if (this[eventToken]) {
+          event$.pipe(takeUntil(this[destroyToken])).subscribe(this[eventToken]);
+        }
+
+        this[eventToken] = event$;
       },
       get() {
-        return this[event$];
+        initIfNeeded(this, eventToken, destroyToken);
+
+        return defer(() => this[eventToken]);
       },
     });
   };

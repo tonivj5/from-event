@@ -85,6 +85,45 @@ class HostComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
+You are not limited to use it only inside `AfterViewInit` or `AfterContentInit`:
+
+```ts
+@Component({
+  template: `
+    <button #plus>+1</button>
+    <button #minus>-1</button>
+    <button #reset>Reset</button>
+    {{ counter$ | async }}
+  `,
+})
+export class CounterComponent {
+  @FromEvent('click')
+  @ViewChild('plus')
+  plus$: Observable<MouseEvent>;
+
+  @FromEvent('click')
+  @ViewChild('minus')
+  minus$: Observable<MouseEvent>;
+
+  @FromEvent('click')
+  @ViewChild('reset')
+  reset$: Observable<MouseEvent>;
+
+  count$ = merge(
+    this.plus$.pipe(mapTo(1)), 
+    this.minus$.pipe(mapTo(-1))
+  ).pipe(
+    startWith(0),
+    scan((acc, curr) => acc + curr)
+  );
+
+  counter$ = this.reset$.pipe(
+    startWith(null),
+    switchMap(() => this.count$)
+  );
+}
+```
+
 Have fun, and don't forget to unsubscribe. If you work with **Ivy**, you can do it with [until-destroy](https://github.com/ngneat/until-destroy).
 
 ## Contributors ✨
@@ -97,6 +136,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://www.netbasal.com"><img src="https://avatars1.githubusercontent.com/u/6745730?v=4" width="100px;" alt=""/><br /><sub><b>Netanel Basal</b></sub></a><br /><a href="https://github.com/@ngneat/from-event/commits?author=NetanelBasal" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/tonivj5"><img src="https://avatars2.githubusercontent.com/u/7110786?v=4" width="100px;" alt=""/><br /><sub><b>Toni Villena</b></sub></a><br /><a href="https://github.com/@ngneat/from-event/commits?author=tonivj5" title="Code">💻</a> <a href="#example-tonivj5" title="Examples">💡</a></td>
   </tr>
 </table>
 
