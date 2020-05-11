@@ -85,7 +85,7 @@ class HostComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
-You can use it from the beginning, without the need of implement the `AfterViewInit` hook.
+You are not limited to use it only inside `AfterViewInit` or `AfterContentInit`:
 
 ```ts
 @Component({
