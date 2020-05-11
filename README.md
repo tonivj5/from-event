@@ -85,6 +85,42 @@ class HostComponent implements AfterViewInit, OnDestroy {
 }
 ```
 
+You can use it from the beginning, without the need of implement the `AfterViewInit` hook.
+
+```ts
+@Component({
+  template: `
+    <button #plus>+1</button>
+    <button #minus>-1</button>
+    <button #reset>Reset</button>
+    {{ counter$ | async }}
+  `,
+})
+export class CounterComponent {
+  @FromEvent('click')
+  @ViewChild('plus')
+  plus$: Observable<MouseEvent>;
+
+  @FromEvent('click')
+  @ViewChild('minus')
+  minus$: Observable<MouseEvent>;
+
+  @FromEvent('click')
+  @ViewChild('reset')
+  reset$: Observable<MouseEvent>;
+
+  count$ = merge(this.plus$.pipe(mapTo(1)), this.minus$.pipe(mapTo(-1))).pipe(
+    startWith(0),
+    scan((count, addition) => count + addition)
+  );
+
+  counter$ = this.reset$.pipe(
+    startWith(null),
+    switchMap(() => this.count$)
+  );
+}
+```
+
 Have fun, and don't forget to unsubscribe. If you work with **Ivy**, you can do it with [until-destroy](https://github.com/ngneat/until-destroy).
 
 ## Contributors ✨
