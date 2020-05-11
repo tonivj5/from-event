@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { finalize, refCount, publish } from 'rxjs/operators';
+import { finalize, share } from 'rxjs/operators';
 
 export function initIfNeeded(that: object, eventToken: symbol, destroyToken?: symbol) {
   if (!that[eventToken]) {
@@ -15,8 +15,7 @@ export function initIfNeeded(that: object, eventToken: symbol, destroyToken?: sy
         that[destroyToken].complete();
         that[destroyToken] = null;
       }),
-      publish(),
-      refCount()
+      share()
     );
   }
 }
