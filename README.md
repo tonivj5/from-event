@@ -37,6 +37,46 @@ class ButtonComponent implements AfterViewInit {
 }
 ```
 
+
+You are not limited to use it only inside `AfterViewInit` or `AfterContentInit`:
+
+```ts
+@Component({
+  template: `
+    <button #plus>+1</button>
+    <button #minus>-1</button>
+    <button #reset>Reset</button>
+    {{ counter$ | async }}
+  `,
+})
+export class CounterComponent {
+  @FromEvent('click')
+  @ViewChild('plus')
+  plus$: Observable<MouseEvent>;
+
+  @FromEvent('click')
+  @ViewChild('minus')
+  minus$: Observable<MouseEvent>;
+
+  @FromEvent('click')
+  @ViewChild('reset')
+  reset$: Observable<MouseEvent>;
+
+  count$ = merge(
+    this.plus$.pipe(mapTo(1)), 
+    this.minus$.pipe(mapTo(-1))
+  ).pipe(
+    startWith(0),
+    scan((acc, curr) => acc + curr)
+  );
+
+  counter$ = this.reset$.pipe(
+    startWith(null),
+    switchMap(() => this.count$)
+  );
+}
+```
+
 A common example is using it with `switchMap()`:
 
 ```ts
@@ -82,45 +122,6 @@ class HostComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.clicks$.subscribe(e => console.log(e.target));
   }
-}
-```
-
-You are not limited to use it only inside `AfterViewInit` or `AfterContentInit`:
-
-```ts
-@Component({
-  template: `
-    <button #plus>+1</button>
-    <button #minus>-1</button>
-    <button #reset>Reset</button>
-    {{ counter$ | async }}
-  `,
-})
-export class CounterComponent {
-  @FromEvent('click')
-  @ViewChild('plus')
-  plus$: Observable<MouseEvent>;
-
-  @FromEvent('click')
-  @ViewChild('minus')
-  minus$: Observable<MouseEvent>;
-
-  @FromEvent('click')
-  @ViewChild('reset')
-  reset$: Observable<MouseEvent>;
-
-  count$ = merge(
-    this.plus$.pipe(mapTo(1)), 
-    this.minus$.pipe(mapTo(-1))
-  ).pipe(
-    startWith(0),
-    scan((acc, curr) => acc + curr)
-  );
-
-  counter$ = this.reset$.pipe(
-    startWith(null),
-    switchMap(() => this.count$)
-  );
 }
 ```
 
