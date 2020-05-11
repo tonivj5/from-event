@@ -109,9 +109,12 @@ export class CounterComponent {
   @ViewChild('reset')
   reset$: Observable<MouseEvent>;
 
-  count$ = merge(this.plus$.pipe(mapTo(1)), this.minus$.pipe(mapTo(-1))).pipe(
+  count$ = merge(
+    this.plus$.pipe(mapTo(1)), 
+    this.minus$.pipe(mapTo(-1))
+  ).pipe(
     startWith(0),
-    scan((count, addition) => count + addition)
+    scan((acc, curr) => acc + curr)
   );
 
   counter$ = this.reset$.pipe(

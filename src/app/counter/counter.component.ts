@@ -23,7 +23,7 @@ export class CounterComponent {
 
   count$ = merge(this.plus$.pipe(mapTo(1)), this.minus$.pipe(mapTo(-1))).pipe(
     startWith(0),
-    scan((count, addition) => count + addition)
+    scan((acc, curr) => acc + curr)
   );
 
   counter$ = this.reset$.pipe(
