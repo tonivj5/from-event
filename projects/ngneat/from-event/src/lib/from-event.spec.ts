@@ -99,6 +99,13 @@ class ButtonComponent implements OnInit, AfterViewInit, OnDestroy {
       <my-btn [id]="1">Click One</my-btn>
       <my-btn [id]="2">Click Two</my-btn>
     </section>
+
+    <button (click)="state = (state + 1) % 3">Toggle State</button>
+
+    <button *ngIf="isOrig" #destroyable>Original</button>
+    <button *ngIf="isAlt" #destroyable>Alternative</button>
+
+    <button #resubscribe>Resubscribe</button>
   `,
 })
 class HostComponent {
@@ -106,6 +113,38 @@ class HostComponent {
 
   toggle() {
     this.show = !this.show;
+  }
+
+  @FromEvent('click')
+  @ViewChild('resubscribe')
+  resubscribe$: Observable<MouseEvent>;
+
+  resubscribeSubscription = this.resubscribe$.subscribe(() => {
+    this.timesClicked++;
+  });
+
+  @FromEvent('click')
+  @ViewChild('destroyable')
+  destroyable$: Observable<MouseEvent>;
+
+  timesClicked = 0;
+
+  private states = ['orig', 'alt', 'none'];
+
+  state = 0;
+
+  get isOrig() {
+    return this.states[this.state] === 'orig';
+  }
+
+  get isAlt() {
+    return this.states[this.state] === 'alt';
+  }
+
+  constructor() {
+    this.destroyable$.subscribe(() => {
+      this.timesClicked++;
+    });
   }
 }
 
@@ -214,5 +253,45 @@ describe('FromEvent', () => {
     }
 
     expect(buttonOne.constructorIsClickedFiveTimes).toBeTrue();
+  });
+
+  it('should work with dynamic views', () => {
+    const toggle = spectator.query<HTMLButtonElement>(byText('Toggle State'));
+
+    expect(spectator.component.timesClicked).toBe(0);
+
+    spectator.query<HTMLButtonElement>(byText('Original')).click();
+    toggle.click();
+    spectator.detectChanges();
+
+    spectator.query<HTMLButtonElement>(byText('Alternative')).click();
+    toggle.click();
+    spectator.detectChanges();
+    expect(spectator.query<HTMLButtonElement>(byText('Original'))).toBeNull();
+    expect(spectator.query<HTMLButtonElement>(byText('Alternative'))).toBeNull();
+
+    toggle.click();
+    spectator.detectChanges();
+    spectator.query<HTMLButtonElement>(byText('Original')).click();
+
+    expect(spectator.component.timesClicked).toBe(3);
+  });
+
+  it('should work on re-subscription', () => {
+    expect(spectator.component.timesClicked).toBe(0);
+
+    spectator.query<HTMLButtonElement>(byText('Resubscribe')).click();
+
+    expect(spectator.component.timesClicked).toBe(1);
+
+    spectator.component.resubscribeSubscription.unsubscribe();
+
+    spectator.component.resubscribe$.subscribe(() => {
+      spectator.component.timesClicked++;
+    });
+
+    spectator.query<HTMLButtonElement>(byText('Resubscribe')).click();
+
+    expect(spectator.component.timesClicked).toBe(2);
   });
 });
