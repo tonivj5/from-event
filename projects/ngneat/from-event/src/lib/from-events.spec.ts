@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChildren } from '@
 import { byText, createComponentFactory, Spectator } from '@ngneat/spectator';
 import { Observable, Subject } from 'rxjs';
 import { FromEvents } from '@ngneat/from-event';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, mapTo, switchMap } from 'rxjs/operators';
 
 let clicked = [];
 let clickedFromConstructorSubscription = [];
@@ -29,10 +29,16 @@ class ButtonComponent {}
 
     <button *ngIf="isOrig" #destroyable>Original</button>
     <button *ngIf="isAlt" #destroyable>Alternative</button>
+
+    <button #plus>+1</button>
   `,
 })
 class HostComponent implements AfterViewInit, OnDestroy {
   subject = new Subject();
+
+  @FromEvents('click')
+  @ViewChildren('plus')
+  plus$: Observable<MouseEvent>;
 
   @FromEvents('click')
   @ViewChildren(ButtonComponent, { read: ElementRef })
@@ -143,5 +149,26 @@ describe('FromEvents', () => {
     spectator.query<HTMLButtonElement>(byText('Resubscribe')).click();
 
     expect(spectator.component.timesClicked).toBe(2);
+  });
+
+  it('should work defering the initialization', () => {
+    let count = 0;
+
+    // Doing this, we don't call the getter.
+    const plusOne$ = spectator.component.plus$.pipe(mapTo(1));
+
+    const subs = spectator.component.resubscribe$.pipe(switchMap(() => plusOne$)).subscribe(() => count++);
+
+    // Call finalize
+    spectator.query<HTMLButtonElement>(byText('Resubscribe')).click();
+    // Recall finalize, but how the getter hasn't been called the subject, destroy, etc.
+    // aren't initialized and it throws an error.
+    spectator.query<HTMLButtonElement>(byText('Resubscribe')).click();
+
+    spectator.query<HTMLButtonElement>(byText('+1')).click();
+
+    expect(count).toBe(1);
+
+    subs.unsubscribe();
   });
 });

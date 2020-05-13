@@ -1,5 +1,5 @@
 import { ElementRef } from '@angular/core';
-import { fromEvent } from 'rxjs';
+import { fromEvent, defer } from 'rxjs';
 
 import { createTokens, initIfNeeded, subscribeToEventIfPossible } from './helpers';
 import { That } from './types';
@@ -27,10 +27,12 @@ export function FromEvent<K extends keyof DocumentEventMap>(event: K, eventOptio
         subscribeToEventIfPossible(this, tokens);
       },
       get(this: That) {
-        initIfNeeded(this, tokens);
-        subscribeToEventIfPossible(this, tokens);
+        return defer(() => {
+          initIfNeeded(this, tokens);
+          subscribeToEventIfPossible(this, tokens);
 
-        return this[tokens.subject];
+          return this[tokens.subject];
+        });
       },
     });
   };

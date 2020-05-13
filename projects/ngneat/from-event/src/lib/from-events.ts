@@ -1,5 +1,5 @@
 import { ElementRef, QueryList } from '@angular/core';
-import { fromEvent, merge } from 'rxjs';
+import { fromEvent, merge, defer } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
 
 import { createTokens, initIfNeeded, subscribeToEventIfPossible } from './helpers';
@@ -31,10 +31,12 @@ export function FromEvents<K extends keyof DocumentEventMap>(event: K, eventOpti
         subscribeToEventIfPossible(this, tokens);
       },
       get(this: That) {
-        initIfNeeded(this, tokens);
-        subscribeToEventIfPossible(this, tokens);
+        return defer(() => {
+          initIfNeeded(this, tokens);
+          subscribeToEventIfPossible(this, tokens);
 
-        return this[tokens.subject];
+          return this[tokens.subject];
+        });
       },
     });
   };
