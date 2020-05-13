@@ -9,6 +9,5 @@ declare var tokens: Tokens;
 export interface That {
   [tokens.event]: Observable<Event>;
   [tokens.subject]: Subject<Event>;
-  [tokens.destroy]: Subject<void>;
   [tokens.subscription]: Subscription;
 }
