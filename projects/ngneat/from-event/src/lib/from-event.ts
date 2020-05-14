@@ -1,28 +1,39 @@
 import { ElementRef } from '@angular/core';
 import { fromEvent, defer } from 'rxjs';
 
-import { initIfNeeded } from './init-if-needed';
-import { takeUntil } from 'rxjs/operators';
+import { createTokens } from './create-tokens';
+import { initIfNeeded, subscribeToEventIfPossible } from './helpers';
+import { This } from './types';
 
 export function FromEvent<K extends keyof DocumentEventMap>(event: K, eventOptions?: AddEventListenerOptions) {
   return function (target: any, propertyKey: string) {
-    const eventToken = Symbol(propertyKey);
-    const destroyToken = Symbol(propertyKey);
+    const tokens = createTokens(propertyKey);
 
     Object.defineProperty(target, propertyKey, {
-      set(elementRef: ElementRef) {
-        const event$ = fromEvent(elementRef.nativeElement, event, eventOptions);
+      set(this: This, elementRef?: ElementRef) {
+        initIfNeeded(this, tokens);
 
-        if (this[eventToken]) {
-          event$.pipe(takeUntil(this[destroyToken])).subscribe(this[eventToken]);
+        if (this[tokens.subscription]) {
+          this[tokens.subscription].unsubscribe();
+          this[tokens.subscription] = null;
         }
 
-        this[eventToken] = event$;
-      },
-      get() {
-        initIfNeeded(this, eventToken, destroyToken);
+        if (!elementRef) {
+          this[tokens.event] = null;
 
-        return defer(() => this[eventToken]);
+          return;
+        }
+
+        this[tokens.event] = fromEvent(elementRef.nativeElement, event, eventOptions);
+        subscribeToEventIfPossible(this, tokens);
+      },
+      get(this: This) {
+        return defer(() => {
+          initIfNeeded(this, tokens);
+          subscribeToEventIfPossible(this, tokens);
+
+          return this[tokens.subject];
+        });
       },
     });
   };
