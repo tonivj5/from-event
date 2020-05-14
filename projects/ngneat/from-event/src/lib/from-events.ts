@@ -2,15 +2,16 @@ import { ElementRef, QueryList } from '@angular/core';
 import { fromEvent, merge, defer } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
 
-import { createTokens, initIfNeeded, subscribeToEventIfPossible } from './helpers';
-import { That } from './types';
+import { createTokens } from './create-tokens';
+import { initIfNeeded, subscribeToEventIfPossible } from './helpers';
+import { This } from './types';
 
 export function FromEvents<K extends keyof DocumentEventMap>(event: K, eventOptions?: AddEventListenerOptions) {
   return function (target: any, propertyKey: string) {
     const tokens = createTokens(propertyKey);
 
     Object.defineProperty(target, propertyKey, {
-      set(this: That, list: QueryList<ElementRef>) {
+      set(this: This, list: QueryList<ElementRef>) {
         initIfNeeded(this, tokens);
 
         if (this[tokens.event]) {
@@ -30,7 +31,7 @@ export function FromEvents<K extends keyof DocumentEventMap>(event: K, eventOpti
 
         subscribeToEventIfPossible(this, tokens);
       },
-      get(this: That) {
+      get(this: This) {
         return defer(() => {
           initIfNeeded(this, tokens);
           subscribeToEventIfPossible(this, tokens);

@@ -1,46 +1,34 @@
 import { Subject } from 'rxjs';
-import { finalize, share, takeUntil } from 'rxjs/operators';
+import { finalize, share } from 'rxjs/operators';
 
-import { That, Tokens } from './types';
+import { This, Tokens } from './types';
 
-export function createTokens(propertyKey: string) {
-  const event = Symbol(`event ${propertyKey}`);
-  const subject = Symbol(`subject ${propertyKey}`);
-  const subscription = Symbol(`subscription ${propertyKey}`);
-
-  return {
-    event,
-    subject,
-    subscription,
-  } as const;
-}
-
-export function initIfNeeded(that: That, tokens: Tokens) {
-  if (that[tokens.subject]) {
+export function initIfNeeded(instance: This, tokens: Tokens) {
+  if (instance[tokens.subject]) {
     return;
   }
 
   let event$ = new Subject<Event>();
 
-  that[tokens.subject] = event$.pipe(
+  instance[tokens.subject] = event$.pipe(
     finalize(() => {
-      if (that[tokens.subscription]) {
-        that[tokens.subscription].unsubscribe();
-        that[tokens.subscription] = null;
+      if (instance[tokens.subscription]) {
+        instance[tokens.subscription].unsubscribe();
+        instance[tokens.subscription] = null;
       }
 
       event$.complete();
       event$ = null;
-      that[tokens.subject] = null;
+      instance[tokens.subject] = null;
     }),
     share()
   ) as typeof event$;
 }
 
-export function subscribeToEventIfPossible(that: That, tokens: Tokens) {
-  if (that[tokens.subscription] || !that[tokens.event]) {
+export function subscribeToEventIfPossible(instance: This, tokens: Tokens) {
+  if (instance[tokens.subscription] || !instance[tokens.event]) {
     return;
   }
 
-  that[tokens.subscription] = that[tokens.event].subscribe(that[tokens.subject]);
+  instance[tokens.subscription] = instance[tokens.event].subscribe(instance[tokens.subject]);
 }
