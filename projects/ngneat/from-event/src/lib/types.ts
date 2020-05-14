@@ -1,6 +1,6 @@
 import { Observable, Subject, Subscription } from 'rxjs';
 
-import type { createTokens } from './create-tokens';
+import { createTokens } from './create-tokens';
 
 export type Tokens = ReturnType<typeof createTokens>;
 
